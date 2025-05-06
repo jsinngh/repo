@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>I'm Sorry </title>
+ <link rel="stylesheet" href="style.css">
+ <!-- <script src="script.js"></script> -->
+  <!-- Add poppins font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- LOADING SCREEN -->
+  <div class="loading">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <h1>From MOTU</h1>
+  </header>
+
+  <!-- SPECIAL MESSAGE -->
+  <div class="special-message">
+    <p>Maine socha ki tune id delete kar di, ab purani chats kese padegi...</p>
+    <p>To ye maine apni id de rahi hu</p>
+    <i class="highlight">Ye rahi ID: <i>waitingforsabzipoori_</i>  <br> password-><i>atanahi</i></p>
+  </div>
+<div class="special-message"> Ghazals tuje pasasnd hai na sun na to ye rhi kuch</div>
+      <!-- SONG CARDS -->
+  <div class="cards">
+    <div class="card" data-song-id="song1" onclick="handleCardClick(this)">
+      <div class="inner-card">
+        <div class="card-face front">Song For You 🎵</div>
+        <div class="card-face back">
+          <div class="song-title">Tum Aa Gaye Ho</div>
+          <div class="song-lyrics">Click to play music</div>
+          <!-- <div class="song-artist">- Arijit Singh (Aashiqui 2)</div> -->
+          <div class="music-controls">
+            <button class="play-pause-btn" onclick="event.stopPropagation(); togglePlay('song1')">
+              <span class="play-icon">▶</span>
+              <span class="pause-icon" style="display:none;">⏸</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <audio id="song1" preload="none">
+        <source src="./tum_aa.mp3" type="audio/mpeg">
+      
+      </audio>
+    </div>
+    
+    <div class="card" data-song-id="song2" onclick="handleCardClick(this)">
+      <div class="inner-card">
+        <div class="card-face front">Missing You 🎵</div>
+        <div class="card-face back">
+          <div class="song-title">Ek Pyaar Ka Nagma Hai</div>
+          <div class="song-lyrics">Click to play music</div>
+          <!-- <div class="song-artist">- Arijit Singh (Half Girlfriend)</div> -->
+          <div class="music-controls">
+            <button class="play-pause-btn" onclick="event.stopPropagation(); togglePlay('song2')">
+              <span class="play-icon">▶</span>
+              <span class="pause-icon" style="display:none;">⏸</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <audio id="song2" preload="none">
+        <source src="./nagma.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+    
+    <div class="card" data-song-id="song3" onclick="handleCardClick(this)">
+      <div class="inner-card">
+        <div class="card-face front">Our Song 🎵</div>
+        <div class="card-face back">
+          <div class="song-title">Tumko Dekha to ye Khyal</div>
+          <div class="song-lyrics">Click to play music</div>
+          <!-- <div class="song-artist">- Arijit Singh (Agent Vinod)</div> -->
+          <div class="music-controls">
+            <button class="play-pause-btn" onclick="event.stopPropagation(); togglePlay('song3')">
+              <span class="play-icon">▶</span>
+              <span class="pause-icon" style="display:none;">⏸</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <audio id="song3" preload="none">
+        <source src="./ek_pyar.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  </div>
+
+  <!-- STATS DISPLAY (Hidden initially) -->
+  <div class="stats-container" id="statsContainer">
+    <div class="stats-title">People who viewed this:</div>
+    <div class="stats-counts">
+      <div class="stat">
+        <div class="stat-value" id="yesCount">0</div>
+        <div class="stat-label">Yes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="noAttempts">0</div>
+        <div class="stat-label">No Attempts</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="visitors">0</div>
+        <div class="stat-label">Total Visitors</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SORRY MESSAGE -->
+  <div class="sorry-text">Can we talk? 🥺</div>
+  
+  <!-- BUTTONS SECTION -->
+  <div class="button-container">
+    <button class="yes-btn" onclick="acceptApology()">
+      Yes
+    </button>
+
+    <button id="noBtn" class="no-btn">
+      No
+    </button>
+    
+    <div id="naughtyMsg">Please say yes... 🥺</div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal" id="responseModal">
+    <div class="modal-content">
+      <h3 class="modal-title">Thank You! ❤️</h3>
+      <p class="modal-message">You're the best! I knew we could work things out!</p>
+      <button class="modal-btn" onclick="closeModal()">Okay</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <!-- <footer>
+    Made with love ❤️ - 2025
+  </footer> -->
+  
+  <script>
+    const song = document.getElementById('song2');
+    const song1 = document.getElementById('song3');
+
+    song1.addEventListener('loadedmetadata', function() {
+      song.currentTime = 46; // Start from 30 seconds
+    });
+    // MongoDB connection and stats handler
+    const db = {
+      // Initialize with default values
+      responses: {
+        yes: 0,
+        noAttempts: 0,
+        visitors: 0,
+        finalNo: 0
+      },
+      
+      // Define the API endpoint (replace with your actual MongoDB API endpoint)
+      apiUrl: 'https://api.yourserver.com/stats',
+      
+      // Fetch current stats from MongoDB
+      fetchStats: async function() {
+        try {
+          const response = await fetch(`${this.apiUrl}/get`);
+          if (response.ok) {
+            const data = await response.json();
+            this.responses = data;
+            return data;
+          } else {
+            console.error('Failed to fetch stats from MongoDB');
+            return this.responses;
+          }
+        } catch (error) {
+          console.error('Error connecting to MongoDB:', error);
+          return this.responses;
+        }
+      },
+      
+      // Update stats in MongoDB
+      updateStats: async function(type, value = 1) {
+        // First update local copy for immediate UI feedback
+        this.responses[type] += value;
+        
+        if (document.getElementById(type + 'Count')) {
+          document.getElementById(type + 'Count').textContent = this.responses[type];
+        }
+        
+        // Update visitors count in DOM if necessary
+        if (type === 'visitors' && document.getElementById('visitors')) {
+          document.getElementById('visitors').textContent = this.responses.visitors;
+        }
+        
+        // Then update MongoDB
+        try {
+          const response = await fetch(`${this.apiUrl}/update`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              type: type,
+              value: value
+            })
+          });
+          
+          if (!response.ok) {
+            console.error('Failed to update MongoDB');
+          }
+        } catch (error) {
+          console.error('Error updating MongoDB:', error);
+        }
+      },
+      
+      // Get current stats
+      getStats: function() {
+        return this.responses;
+      },
+      
+      // Display stats in the UI
+      displayStats: function() {
+        if (document.getElementById('yesCount')) {
+          document.getElementById('yesCount').textContent = this.responses.yes;
+        }
+        if (document.getElementById('noAttempts')) {
+          document.getElementById('noAttempts').textContent = this.responses.noAttempts;
+        }
+        if (document.getElementById('visitors')) {
+          document.getElementById('visitors').textContent = this.responses.visitors;
+        }
+        if (document.getElementById('statsContainer')) {
+          document.getElementById('statsContainer').style.display = 'block';
+        }
+      }
+    };
+
+    // Page load with MongoDB connection
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Show loading screen
+      const loading = document.querySelector('.loading');
+      loading.style.display = 'flex';
+      
+      try {
+        // Fetch current stats from MongoDB
+        await db.fetchStats();
+        
+        // Increment visitor count
+        await db.updateStats('visitors');
+        
+        // Hide loading screen
+        loading.style.display = 'none';
+        
+        // Show stats after a delay
+        setTimeout(() => {
+          db.displayStats();
+        }, 1000);
+      } catch (error) {
+        console.error('Failed to initialize MongoDB connection:', error);
+        
+        // Hide loading screen even if there's an error
+        loading.style.display = 'none';
+        
+        // Show error message
+        const statsContainer = document.getElementById('statsContainer');
+        if (statsContainer) {
+          statsContainer.innerHTML = '<p class="error-message">Could not connect to the database. Stats unavailable.</p>';
+          statsContainer.style.display = 'block';
+        }
+      }
+    });
+
+    // Global audio management
+    let currentlyPlaying = null;
+    
+    // Handle card click - flip and potentially play music
+    function handleCardClick(card) {
+      flipCard(card);
+    }
+    
+    // Flip Cards with better animation
+    function flipCard(card) {
+      const inner = card.querySelector('.inner-card');
+      inner.classList.toggle('flipped');
+      
+      // Add 3D effect on hover
+      if (!inner.classList.contains('flipped')) {
+        card.addEventListener('mousemove', rotate3D);
+        card.addEventListener('mouseleave', resetRotation);
+      } else {
+        card.removeEventListener('mousemove', rotate3D);
+        card.removeEventListener('mouseleave', resetRotation);
+      }
+    }
+    
+    // Toggle play/pause for audio
+    function togglePlay(audioId) {
+      const audio = document.getElementById(audioId);
+      const card = document.querySelector(`[data-song-id="${audioId}"]`);
+      const playIcon = card.querySelector('.play-icon');
+      const pauseIcon = card.querySelector('.pause-icon');
+      
+      // If this is a different song than what's currently playing, stop the current one
+      if (currentlyPlaying && currentlyPlaying !== audio) {
+        currentlyPlaying.pause();
+        currentlyPlaying.currentTime = 0;
+        
+        // Reset UI for previously playing card
+        const prevCard = document.querySelector(`[data-song-id="${currentlyPlaying.id}"]`);
+        if (prevCard) {
+          prevCard.classList.remove('playing');
+          const prevPlayIcon = prevCard.querySelector('.play-icon');
+          const prevPauseIcon = prevCard.querySelector('.pause-icon');
+          if (prevPlayIcon && prevPauseIcon) {
+            prevPlayIcon.style.display = 'block';
+            prevPauseIcon.style.display = 'none';
+          }
+        }
+      }
+      
+      // Toggle play/pause for current audio
+      if (audio.paused) {
+        audio.play().catch(e => {
+          console.error('Error playing audio:', e);
+          alert('Please ensure you have uploaded your music files and updated the URLs in the HTML.');
+        });
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'block';
+        card.classList.add('playing');
+        currentlyPlaying = audio;
+      } else {
+        audio.pause();
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+        card.classList.remove('playing');
+        currentlyPlaying = null;
+      }
+    }
+    
+    // When audio ends
+    document.querySelectorAll('audio').forEach(audio => {
+      audio.addEventListener('ended', function() {
+        const card = document.querySelector(`[data-song-id="${this.id}"]`);
+        if (card) {
+          card.classList.remove('playing');
+          const playIcon = card.querySelector('.play-icon');
+          const pauseIcon = card.querySelector('.pause-icon');
+          if (playIcon && pauseIcon) {
+            playIcon.style.display = 'block';
+            pauseIcon.style.display = 'none';
+          }
+        }
+        currentlyPlaying = null;
+      });
+    });
+
+    // 3D rotation effect
+    function rotate3D(e) {
+      const card = this;
+      const inner = card.querySelector('.inner-card');
+      if (inner.classList.contains('flipped')) return;
+      
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const angleY = (x - centerX) / 10;
+      const angleX = (centerY - y) / 10;
+      
+      inner.style.transform = `rotateY(${angleY}deg) rotateX(${angleX}deg)`;
+    }
+
+    function resetRotation() {
+      const inner = this.querySelector('.inner-card');
+      if (!inner.classList.contains('flipped')) {
+        inner.style.transform = 'rotateY(0deg) rotateX(0deg)';
+      }
+    }
+
+    // Modified No Button with limited dodges
+    const noBtn = document.getElementById('noBtn');
+    const msg = document.getElementById('naughtyMsg');
+    let dodgeCount = 0;
+    let increaseFactor = 1;
+    let messages = [
+      "Please say yes... 🥺",
+      "Give me one chance... 🙏",
+      "Why won't you agree? 😔",
+      "I'll change, I promise... 😭",
+      "I can't live without you... ❤️",
+      "Just one more chance... 🙏"
+    ];
+
+    // Track mouse position for better evasion
+    let mouseX = 0;
+    let mouseY = 0;
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    // Add click handler for final no option
+    async function handleFinalNo() {
+      // Update MongoDB with final rejection
+      await db.updateStats('finalNo');
+      
+      // Log rejection for analytics
+      try {
+        await fetch(`${db.apiUrl}/log-event`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            event: 'final_rejection',
+            timestamp: new Date().toISOString(),
+            sessionId: generateSessionId()
+          })
+        });
+      } catch (error) {
+        console.error('Failed to log rejection event:', error);
+      }
+      
+      // Show rejection modal
+      const modal = document.getElementById('responseModal');
+      const modalTitle = modal.querySelector('.modal-title');
+      const modalMessage = modal.querySelector('.modal-message');
+      
+      modalTitle.textContent = "I Understand 💔";
+      modalMessage.textContent = "Thank you for your honesty. I respect your decision and wish you well.";
+      modal.classList.add('active');
+    }
+
+    // Generate a unique session ID for tracking
+    function generateSessionId() {
+      return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    noBtn.addEventListener('mouseover', () => {
+      // After 3 attempts, make the No button normal
+      if (dodgeCount >= 3) {
+        noBtn.style.transition = 'transform 0.3s ease';
+        noBtn.style.transform = 'translate(0px, 0px)';
+        
+        // Change button text and appearance
+        noBtn.innerText = "No";
+        noBtn.style.cursor = 'pointer';
+        
+        // Remove mouseover event and add click event
+        noBtn.removeEventListener('mouseover', arguments.callee);
+        noBtn.addEventListener('click', handleFinalNo);
+        
+        // Update message
+        msg.textContent = "I understand if you want to say no...";
+        msg.style.opacity = 1;
+        return;
+      }
+      
+      dodgeCount++;
+      
+      // Update MongoDB simulation
+      db.updateStats('noAttempts');
+      
+      // Change message
+      const messageIndex = Math.min(messages.length - 1, Math.floor(dodgeCount));
+      msg.textContent = messages[messageIndex];
+      
+      // Calculate safe zone away from mouse pointer
+      const btnRect = noBtn.getBoundingClientRect();
+      const btnCenterX = btnRect.left + btnRect.width/2;
+      const btnCenterY = btnRect.top + btnRect.height/2;
+      
+      // Direction away from mouse
+      const dirX = btnCenterX - mouseX;
+      const dirY = btnCenterY - mouseY;
+      
+      // Normalize and scale
+      const length = Math.sqrt(dirX * dirX + dirY * dirY);
+      const normalizedX = dirX / length;
+      const normalizedY = dirY / length;
+      
+      // Increase dodge distance based on count
+      increaseFactor = Math.min(2.5, 1 + (dodgeCount * 0.1));
+      
+      // Calculate new position
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const baseDistance = Math.min(windowWidth, windowHeight) / 4;
+      
+      let randX = normalizedX * baseDistance * increaseFactor + (Math.random() * 50 - 25);
+      let randY = normalizedY * baseDistance * increaseFactor + (Math.random() * 50 - 25);
+      
+      // Keep button within viewport
+      const margin = 20;
+      const maxX = windowWidth - btnRect.width - margin;
+      const maxY = windowHeight - btnRect.height - margin;
+      
+      const newX = Math.max(margin, Math.min(maxX, btnRect.left + randX)) - btnRect.left;
+      const newY = Math.max(margin, Math.min(maxY, btnRect.top + randY)) - btnRect.top;
+      
+      // Apply transform with smooth animation
+      noBtn.style.transition = `transform ${0.3 + Math.min(0.5, dodgeCount * 0.03)}s cubic-bezier(0.68, -0.55, 0.27, 1.55)`;
+      noBtn.style.transform = `translate(${newX}px, ${newY}px)`;
+      
+      // Show message with increasing opacity
+      msg.style.opacity = Math.min(1, dodgeCount * 0.2);
+      
+      // Change button text based on attempts
+      if (dodgeCount > 1) {
+        noBtn.innerText = "No...?";
+      }
+      
+      // Make Yes button bigger with each dodge
+      const yesBtn = document.querySelector('.yes-btn');
+      yesBtn.style.transform = `scale(${1 + Math.min(0.3, dodgeCount * 0.05)})`;
+    });
+
+    // Acceptance celebration
+    async function acceptApology() {
+      // Update MongoDB with acceptance
+      await db.updateStats('yes');
+      
+      // Log acceptance for analytics
+      try {
+        await fetch(`${db.apiUrl}/log-event`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            event: 'acceptance',
+            timestamp: new Date().toISOString(),
+            sessionId: generateSessionId(),
+            dodgeCount: dodgeCount
+          })
+        });
+      } catch (error) {
+        console.error('Failed to log acceptance event:', error);
+      }
+      
+      // Create confetti
+      createConfetti();
+      
+      // Show modal with acceptance message
+      const modal = document.getElementById('responseModal');
+      const modalTitle = modal.querySelector('.modal-title');
+      const modalMessage = modal.querySelector('.modal-message');
+      
+      modalTitle.textContent = "Thank You! ❤️";
+      modalMessage.textContent = "You're the best! I knew we could work things out!";
+      
+      setTimeout(() => {
+        modal.classList.add('active');
+      }, 500);
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('responseModal').classList.remove('active');
+    }
+
+    // Create confetti effect
+    function createConfetti() {
+      const colors = ['#ff577f', '#ff884b', '#ffd384', '#fff9b0', '#a2d2ff', '#fee440', '#9b5de5', '#f15bb5'];
+      const confettiCount = 150;
+      
+      for (let i = 0; i < confettiCount; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          
+          // Random properties
+          const size = Math.random() * 10 + 6;
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const shape = Math.random() > 0.5 ? '50%' : Math.random() > 0.5 ? '0' : '0 50% 50% 0';
+          
+          // Set confetti style
+          confetti.style.width = `${size}px`;
+          confetti.style.height = `${size}px`;
+          confetti.style.backgroundColor = color;
+          confetti.style.borderRadius = shape;
+          confetti.style.left = `${Math.random() * 100}vw`;
+          confetti.style.opacity = '1';
+          
+          // Add to body
+          document.body.appendChild(confetti);
+          
+          // Animate
+          const animation = confetti.animate([
+            { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+            { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+          ], {
+            duration: Math.random() * 3000 + 2000,
+            easing: 'cubic-bezier(0.37, 0, 0.63, 1)'
+          });
+          
+          // Remove when animation completes
+          animation.onfinish = () => {
+            confetti.remove();
+          };
+        }, Math.random() * 500);
+      }
+    }
+
+    // Handle touch devices
+    if ('ontouchstart' in window) {
+      noBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        // Simulate mouseenter event
+        const touch = e.touches[0];
+        mouseX = touch.clientX;
+        mouseY = touch.clientY;
+        noBtn.dispatchEvent(new Event('mouseover'));
+      });
+    }
+  </script>
+</body>
+</html> 
